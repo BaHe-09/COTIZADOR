@@ -843,6 +843,42 @@ nav.scrolled {
 }
 .form-submit:active { transform: scale(0.99); }
 
+
+.form-error {
+  display: none;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,120,120,0.35);
+  background: rgba(255,90,90,0.08);
+  color: #ffb4a8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.form-submit.loading { opacity: 0.7; pointer-events: none; }
+.model-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.model-card {
+  border: 1px solid var(--border);
+  background: var(--ink-2);
+  padding: 12px;
+}
+.model-card.active { border-color: var(--gold); background: var(--mist); }
+.model-card strong {
+  display: block;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.model-card span { color: var(--text-muted); font-size: 12px; }
+.model-note { color: var(--text-muted); font-size: 12px; line-height: 1.6; margin-top: 16px; }
+@media (max-width: 700px) { .model-comparison, .result-metrics { grid-template-columns: 1fr; display: grid; } }
+
 /* RESULTADO */
 #resultado {
   margin-top: 32px;
@@ -1526,20 +1562,20 @@ footer {
     <div class="cotizador-wrap">
       <div class="cotizador-info reveal">
         <h3>Valuación basada en inteligencia artificial</h3>
-        <p>Nuestros modelos predictivos utilizan regresión lineal, árboles de decisión y random forest para estimar el valor de mercado con alta precisión.</p>
+        <p>Nuestros modelos predictivos integran LightGBM, Random Forest y XGBoost para estimar el valor de mercado con alta precisión.</p>
         <div class="info-features">
           <div class="info-feature">
             <div class="feature-dot"></div>
             <div class="feature-text">
               <strong>Datos del mercado CDMX</strong>
-              <span>Entrenado con más de 80,000 transacciones históricas verificadas</span>
+              <span>Modelos entrenados con variables de tipo, alcaldía, superficie y coordenadas</span>
             </div>
           </div>
           <div class="info-feature">
             <div class="feature-dot"></div>
             <div class="feature-text">
               <strong>Múltiples algoritmos</strong>
-              <span>Elige el modelo que mejor se adapta a tu tipo de propiedad</span>
+              <span>Compara predicciones entre LightGBM, Random Forest y XGBoost</span>
             </div>
           </div>
           <div class="info-feature">
@@ -1559,52 +1595,72 @@ footer {
         </div>
       </div>
       <div class="cotizador-form reveal">
+        <div id="form-error" class="form-error" role="alert"></div>
         <div class="form-row">
           <div class="form-group">
-            <label>Metros cuadrados</label>
-            <input type="number" id="metros" placeholder="Ej. 120">
+            <label>Tipo de inmueble</label>
+            <select id="property_type">
+              <option value="apartment">Departamento</option>
+              <option value="house">Casa</option>
+              <option value="store">Local comercial</option>
+              <option value="PH">Penthouse</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Habitaciones</label>
-            <input type="number" id="habitaciones" placeholder="Ej. 3">
+            <label>Alcaldía</label>
+            <select id="place_name">
+              <option value="BenitoJuarez">Benito Juárez</option>
+              <option value="Iztapalapa">Iztapalapa</option>
+              <option value="MiguelHidalgo">Miguel Hidalgo</option>
+              <option value="Cuauhtemoc">Cuauhtémoc</option>
+              <option value="Coyoacan">Coyoacán</option>
+              <option value="AlvaroObregon">Álvaro Obregón</option>
+              <option value="Azcapotzalco">Azcapotzalco</option>
+              <option value="GustavoAMadero">Gustavo A. Madero</option>
+              <option value="Iztacalco">Iztacalco</option>
+              <option value="Tlalpan">Tlalpan</option>
+              <option value="VenustianoCarranza">Venustiano Carranza</option>
+              <option value="Xochimilco">Xochimilco</option>
+              <option value="Tlahuac">Tláhuac</option>
+              <option value="MagdalenaContreras">Magdalena Contreras</option>
+              <option value="Cuajimalpa">Cuajimalpa</option>
+              <option value="MilpaAlta">Milpa Alta</option>
+            </select>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Baños</label>
-            <input type="number" id="banos" placeholder="Ej. 2">
+            <label>Superficie total (m²)</label>
+            <input type="number" id="surface_total" min="10" max="5000" step="1" value="100" placeholder="Ej. 100">
           </div>
           <div class="form-group">
-            <label>Estacionamientos</label>
-            <input type="number" id="estacionamientos" placeholder="Ej. 1">
+            <label>Superficie cubierta (m²)</label>
+            <input type="number" id="surface_covered" min="10" max="5000" step="1" value="100" placeholder="Ej. 100">
           </div>
         </div>
-        <div class="form-group" style="margin-bottom:16px;">
-          <label>Zona / Colonia</label>
-          <select id="zona">
-            <option value="polanco">Polanco</option>
-            <option value="condesa">Condesa</option>
-            <option value="roma">Roma Norte / Sur</option>
-            <option value="santafe">Santa Fe</option>
-            <option value="lomas">Lomas de Chapultepec</option>
-            <option value="delvalle">Del Valle</option>
-            <option value="coyoacan">Coyoacán</option>
-            <option value="interlomas">Interlomas</option>
-          </select>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Latitud</label>
+            <input type="number" id="lat" min="19.0" max="19.7" step="0.0001" value="19.3682" placeholder="Ej. 19.3682">
+          </div>
+          <div class="form-group">
+            <label>Longitud</label>
+            <input type="number" id="lon" min="-99.4" max="-98.8" step="0.0001" value="-99.1717" placeholder="Ej. -99.1717">
+          </div>
         </div>
         <div style="margin-bottom:16px;">
           <label style="display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Algoritmo de valuación</label>
           <div class="algo-selector">
-            <button class="algo-btn active" onclick="setAlgo(this,'linear')">Regresión Lineal</button>
-            <button class="algo-btn" onclick="setAlgo(this,'tree')">Árbol</button>
-            <button class="algo-btn" onclick="setAlgo(this,'forest')">Random Forest</button>
+            <button type="button" class="algo-btn active" onclick="setAlgo(this,'lgbm')">LightGBM</button>
+            <button type="button" class="algo-btn" onclick="setAlgo(this,'rf')">Random Forest</button>
+            <button type="button" class="algo-btn" onclick="setAlgo(this,'xgb')">XGBoost</button>
           </div>
         </div>
-        <input type="hidden" id="algorithm" value="linear">
-        <button class="form-submit" onclick="predecir()">Calcular valuación</button>
+        <input type="hidden" id="algorithm" value="lgbm">
+        <button type="button" class="form-submit" id="predict-button" onclick="predecir()">Calcular valuación</button>
         <div id="resultado">
           <div class="result-price" id="precio"></div>
-          <div class="result-label">Precio estimado de mercado</div>
+          <div class="result-label" id="result-label">Precio estimado de mercado</div>
           <div class="result-metrics">
             <div class="result-metric">
               <div class="val" id="mae-val">—</div>
@@ -1615,11 +1671,17 @@ footer {
               <div class="key">RMSE</div>
             </div>
             <div class="result-metric">
-              <div class="val">97%</div>
-              <div class="key">Confianza</div>
+              <div class="val" id="r2-val">—</div>
+              <div class="key">R²</div>
+            </div>
+            <div class="result-metric">
+              <div class="val" id="mape-val">—</div>
+              <div class="key">MAPE</div>
             </div>
           </div>
+          <div class="model-comparison" id="model-comparison"></div>
           <canvas id="grafica"></canvas>
+          <p class="model-note" id="model-note"></p>
         </div>
       </div>
     </div>
@@ -1840,146 +1902,123 @@ function setAlgo(btn, val){
 }
 
 // COTIZADOR
-const API_URL = "https://TU_BACKEND.onrender.com/predict";
 let chart;
+const currency = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
 
-const zonePrices = {
-  polanco:85000, condesa:62000, roma:58000, santafe:52000,
-  lomas:75000, delvalle:38000, coyoacan:42000, interlomas:44000
-};
+function showError(messages){
+  const box = document.getElementById('form-error');
+  const list = Array.isArray(messages) ? messages : [messages];
+  box.innerHTML = list.map(m => `• ${m}`).join('<br>');
+  box.style.display = 'block';
+}
 
-function validar(d){ return d.metros>0 && d.habitaciones>=0 && d.banos>=0 && d.estacionamientos>=0; }
+function clearError(){
+  const box = document.getElementById('form-error');
+  box.textContent = '';
+  box.style.display = 'none';
+}
 
-async function predecir() {
+function collectPayload(){
+  return {
+    property_type: document.getElementById('property_type').value,
+    place_name: document.getElementById('place_name').value,
+    surface_total: Number(document.getElementById('surface_total').value),
+    surface_covered: Number(document.getElementById('surface_covered').value),
+    lat: Number(document.getElementById('lat').value),
+    lon: Number(document.getElementById('lon').value),
+    algorithm: document.getElementById('algorithm').value
+  };
+}
 
-    const data = {
+function validarFrontend(data){
+  const errors = [];
+  if (!Number.isFinite(data.surface_total) || data.surface_total < 10 || data.surface_total > 5000) errors.push('La superficie total debe estar entre 10 y 5,000 m².');
+  if (!Number.isFinite(data.surface_covered) || data.surface_covered < 10 || data.surface_covered > 5000) errors.push('La superficie cubierta debe estar entre 10 y 5,000 m².');
+  if (Number.isFinite(data.surface_total) && Number.isFinite(data.surface_covered) && data.surface_covered > data.surface_total) errors.push('La superficie cubierta no puede ser mayor que la superficie total.');
+  if (!Number.isFinite(data.lat) || data.lat < 19.0 || data.lat > 19.7) errors.push('La latitud debe ubicarse dentro de Ciudad de México (19.0 a 19.7).');
+  if (!Number.isFinite(data.lon) || data.lon < -99.4 || data.lon > -98.8) errors.push('La longitud debe ubicarse dentro de Ciudad de México (-99.4 a -98.8).');
+  return errors;
+}
 
-        property_type: "apartment",
+async function predecir(){
+  clearError();
+  const data = collectPayload();
+  const errors = validarFrontend(data);
+  if (errors.length) { showError(errors); return; }
 
-        place_name: document.getElementById("zona").value,
+  const button = document.getElementById('predict-button');
+  button.classList.add('loading');
+  button.textContent = 'Calculando...';
 
-        surface_total: document.getElementById("metros").value,
-
-        surface_covered: document.getElementById("metros").value,
-
-        lat: 19.4326,
-
-        lon: -99.1332,
-
-        algorithm: document.getElementById("algorithm").value
-    };
-
-    try {
-
-        const response = await fetch("/predict", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (!result.success) {
-
-            alert(result.errors?.join("\n") || result.error);
-            return;
-        }
-
-        // MOSTRAR RESULTADO
-        document.getElementById("resultado").style.display = "block";
-
-        document.getElementById("precio").innerText =
-            result.formatted_price;
-
-        document.getElementById("mae-val").innerText =
-            "$" + result.metrics.mae.toLocaleString();
-
-        document.getElementById("rmse-val").innerText =
-            "$" + result.metrics.rmse.toLocaleString();
-
-        // GRAFICA
-        const ctx = document.getElementById("grafica");
-
-        new Chart(ctx, {
-
-            type: "bar",
-
-            data: {
-
-                labels: [
-                    "Promedio Zona",
-                    "Predicción"
-                ],
-
-                datasets: [{
-                    label: "Precio MXN",
-
-                    data: [
-                        result.zone_average,
-                        result.prediction
-                    ]
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-    } catch (error) {
-
-        alert("Error al conectar con Flask");
-        console.error(error);
+  try {
+    const response = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      showError(result.errors || result.error || 'No fue posible generar la predicción.');
+      return;
     }
+    mostrarResultado(result);
+  } catch (error) {
+    showError('Error al conectar con Flask. Verifica que el backend esté ejecutándose con `python app.py`.');
+    console.error(error);
+  } finally {
+    button.classList.remove('loading');
+    button.textContent = 'Calcular valuación';
+  }
 }
 
-function setAlgo(btn, algo) {
-
-    document.querySelectorAll(".algo-btn")
-        .forEach(b => b.classList.remove("active"));
-
-    btn.classList.add("active");
-
-    document.getElementById("algorithm").value = algo;
+function renderComparison(result){
+  const container = document.getElementById('model-comparison');
+  container.innerHTML = Object.values(result.all_predictions).map(item => `
+    <div class="model-card ${item.algorithm === result.selected_model.algorithm ? 'active' : ''}">
+      <strong>${item.label}</strong>
+      <span>${item.formatted_price}</span>
+    </div>
+  `).join('');
 }
 
-function mostrarResultado(pred, mae, rmse, zona){
+function mostrarResultado(result){
   document.getElementById('resultado').style.display = 'block';
-  document.getElementById('precio').textContent = '$' + pred.toLocaleString('es-MX');
-  document.getElementById('mae-val').textContent = '$' + Math.round(mae).toLocaleString('es-MX');
-  document.getElementById('rmse-val').textContent = '$' + Math.round(rmse).toLocaleString('es-MX');
+  document.getElementById('precio').textContent = result.formatted_price;
+  document.getElementById('result-label').textContent = `Precio estimado con ${result.selected_model.label}`;
+  document.getElementById('mae-val').textContent = currency.format(result.metrics.mae);
+  document.getElementById('rmse-val').textContent = currency.format(result.metrics.rmse);
+  document.getElementById('r2-val').textContent = `${Math.round(result.metrics.r2 * 100)}%`;
+  document.getElementById('mape-val').textContent = `${Math.round(result.metrics.mape * 100)}%`;
+  renderComparison(result);
+
+  const warnings = Object.values(result.all_predictions).filter(item => item.warning).map(item => `${item.label}: ${item.warning}`);
+  document.getElementById('model-note').textContent = warnings.length
+    ? `Modo desarrollo: ${warnings.join(' | ')}`
+    : 'Predicción generada con los modelos entrenados cargados por Flask.';
 
   if(chart) chart.destroy();
   chart = new Chart(document.getElementById('grafica'),{
     type:'bar',
     data:{
-      labels:['Tu propiedad','Promedio zona'],
+      labels:['Promedio de la alcaldía','Precio predicho'],
       datasets:[{
-        data:[pred, zona],
-        backgroundColor:['rgba(201,169,110,0.85)','rgba(201,169,110,0.25)'],
-        borderColor:['#C9A96E','rgba(201,169,110,0.5)'],
+        label:'Precio MXN',
+        data:[result.zone_average, result.prediction],
+        backgroundColor:['rgba(201,169,110,0.25)','rgba(201,169,110,0.85)'],
+        borderColor:['rgba(201,169,110,0.5)','#C9A96E'],
         borderWidth:1,
         borderRadius:0
       }]
     },
     options:{
       responsive:true,
-      plugins:{legend:{display:false}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label: ctx => currency.format(ctx.parsed.y)}}
+      },
       scales:{
         x:{ticks:{color:'#8A8478',font:{family:'DM Sans',size:11}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(201,169,110,0.15)'}},
-        y:{ticks:{color:'#8A8478',font:{family:'DM Sans',size:11},callback:v=>'$'+v.toLocaleString('es-MX')},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(201,169,110,0.15)'}}
+        y:{ticks:{color:'#8A8478',font:{family:'DM Sans',size:11},callback:v=>currency.format(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(201,169,110,0.15)'}}
       }
     }
   });
