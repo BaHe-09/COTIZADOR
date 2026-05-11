@@ -237,7 +237,7 @@ def _load_metadata() -> None:
             "note":      notes.get(key, ""),
         })
         logger.info(
-            "   → Métricas '%s': R²CV=%.4f | MAE=$%,.0f | MAPE=%.1f%%",
+            "   → Métricas '%s': R²CV=%.4f | MAE=$%.0f | MAPE=%.1f%%",
             key,
             MODEL_DEFAULT_METRICS[key]["r2_cv"],
             MODEL_DEFAULT_METRICS[key]["mae"],
