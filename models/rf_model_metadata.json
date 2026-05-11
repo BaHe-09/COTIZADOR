@@ -1,0 +1,83 @@
+{
+  "feature_cols": [
+    "property_type",
+    "places",
+    "surface_total_in_m2",
+    "surface_covered_in_m2",
+    "lat",
+    "lon",
+    "ratio_covered",
+    "log_surface_total",
+    "log_surface_cov",
+    "dist_zocalo_km",
+    "dist_polanco_km",
+    "zone_ns",
+    "zone_eo",
+    "surf_x_apt",
+    "surf_x_house",
+    "place_median_price"
+  ],
+  "cat_cols": [
+    "property_type",
+    "places"
+  ],
+  "num_cols": [
+    "surface_total_in_m2",
+    "surface_covered_in_m2",
+    "lat",
+    "lon",
+    "ratio_covered",
+    "log_surface_total",
+    "log_surface_cov",
+    "dist_zocalo_km",
+    "dist_polanco_km",
+    "zone_ns",
+    "zone_eo",
+    "surf_x_apt",
+    "surf_x_house",
+    "place_median_price"
+  ],
+  "best_params": {
+    "n_estimators": 300,
+    "max_depth": 25,
+    "min_samples_split": 4,
+    "min_samples_leaf": 2,
+    "max_features": 0.6,
+    "bootstrap": true,
+    "max_samples": 0.85
+  },
+  "cv_r2_mean": 0.8501089840538174,
+  "cv_r2_std": 0.005999010341193669,
+  "test_r2_log": 0.8494784309374163,
+  "test_r2_mxn": 0.7388311825704013,
+  "test_mae": 1296669.8055566323,
+  "test_mape": 28.73942090307928,
+  "target_transform": "log1p",
+  "note": "predict() devuelve log(price+1). Aplicar np.expm1() para MXN.",
+  "alcaldia_medians": {
+    "AlvaroObregon": 2900000.0,
+    "Azcapotzalco": 1343818.0,
+    "BenitoJuarez": 2696000.0,
+    "Coyoacan": 2049333.0,
+    "Cuajimalpa": 7040695.0,
+    "Cuauhtemoc": 1522586.0,
+    "GustavoAMadero": 1560000.0,
+    "Iztacalco": 1029394.0,
+    "Iztapalapa": 918571.0,
+    "MagdalenaContreras": 3800000.0,
+    "MiguelHidalgo": 6410000.0,
+    "MilpaAlta": 1625000.0,
+    "Tlahuac": 1020000.0,
+    "Tlalpan": 2950000.0,
+    "VenustianoCarranza": 934940.0,
+    "Xochimilco": 2710000.0
+  },
+  "zocalo": {
+    "lat": 19.4326,
+    "lon": -99.1332
+  },
+  "polanco": {
+    "lat": 19.4328,
+    "lon": -99.1929
+  }
+}

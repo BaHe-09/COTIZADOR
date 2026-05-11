@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MG Real Estate · CDMX</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+
+:root {
+  --gold: #C9A96E;
+  --gold-light: #E8D5B0;
+  --gold-dark: #8A6A35;
+  --ink: #0A0A0F;
+  --ink-2: #13131A;
+  --ink-3: #1C1C28;
+  --mist: rgba(201,169,110,0.08);
+  --mist-2: rgba(201,169,110,0.15);
+  --text-primary: #F0EBE0;
+  --text-muted: #8A8478;
+  --text-dim: #4A4640;
+  --border: rgba(201,169,110,0.15);
+  --border-bright: rgba(201,169,110,0.35);
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'DM Sans', sans-serif;
+  --error: #E57373;
+  --success: #81C784;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--ink);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR */
+.cursor { width:8px;height:8px;background:var(--gold);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s ease; }
+.cursor-ring { width:36px;height:36px;border:1px solid rgba(201,169,110,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .25s ease,width .3s,height .3s,border-color .3s; }
+.cursor-ring.expand { width:60px;height:60px;border-color:var(--gold); }
+
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9990;opacity:0.4;
+}
+
+/* NAV */
+nav { position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:28px 60px;border-bottom:1px solid transparent;transition:background .5s,border-color .5s,padding .4s; }
+nav.scrolled { background:rgba(10,10,15,0.92);backdrop-filter:blur(20px);border-color:var(--border);padding:18px 60px; }
+.nav-logo { font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:4px;color:var(--gold);text-transform:uppercase;text-decoration:none; }
+.nav-links { display:flex;gap:40px;list-style:none; }
+.nav-links a { text-decoration:none;color:var(--text-muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:400;transition:color .3s;position:relative; }
+.nav-links a::after { content:'';position:absolute;bottom:-4px;left:0;right:100%;height:1px;background:var(--gold);transition:right .4s ease; }
+.nav-links a:hover { color:var(--gold); }
+.nav-links a:hover::after { right:0; }
+.nav-cta { padding:10px 28px;border:1px solid var(--border-bright);color:var(--gold);text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:all .3s;background:transparent; }
+.nav-cta:hover { background:var(--gold);color:var(--ink); }
+
+/* HERO */
+.hero { min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden; }
+.hero-left { display:flex;flex-direction:column;justify-content:center;padding:120px 80px 80px 80px;position:relative;z-index:2; }
+.hero-eyebrow { font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:30px;display:flex;align-items:center;gap:12px; }
+.hero-eyebrow::before { content:'';width:40px;height:1px;background:var(--gold); }
+.hero-title { font-family:var(--serif);font-size:clamp(52px,6vw,88px);font-weight:300;line-height:1.05;letter-spacing:-1px;margin-bottom:32px; }
+.hero-title em { font-style:italic;color:var(--gold); }
+.hero-subtitle { font-size:16px;color:var(--text-muted);line-height:1.8;max-width:400px;margin-bottom:60px;font-weight:300; }
+.hero-actions { display:flex;gap:20px;align-items:center; }
+.btn-primary { padding:16px 40px;background:var(--gold);color:var(--ink);border:none;font-family:var(--sans);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-block; }
+.btn-primary:hover { background:var(--gold-light);transform:translateY(-2px); }
+.btn-ghost { color:var(--text-muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:10px;transition:color .3s; }
+.btn-ghost:hover { color:var(--gold); }
+.btn-ghost .arrow { width:30px;height:1px;background:currentColor;position:relative;transition:width .3s; }
+.btn-ghost:hover .arrow { width:48px; }
+.btn-ghost .arrow::after { content:'';position:absolute;right:0;top:-3px;border:4px solid transparent;border-left:6px solid currentColor; }
+
+.hero-right { position:relative;overflow:hidden; }
+.hero-image-wrap { position:absolute;inset:0;background:linear-gradient(135deg,#1a1a22 0%,#0d0d14 100%); }
+.hero-image-wrap::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,169,110,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(201,169,110,0.06) 0%,transparent 50%); }
+.hero-grid-lines { position:absolute;inset:0;background-image:linear-gradient(rgba(201,169,110,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,0.04) 1px,transparent 1px);background-size:60px 60px; }
+.hero-stats { position:absolute;bottom:60px;left:60px;right:60px;display:flex;gap:1px;background:var(--border); }
+.hero-stat { flex:1;background:rgba(10,10,15,0.85);padding:24px 28px; }
+.hero-stat-number { font-family:var(--serif);font-size:36px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:6px; }
+.hero-stat-label { font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted); }
+
+/* MARQUEE */
+.marquee-wrap { border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0;overflow:hidden;background:var(--mist); }
+.marquee-track { display:flex;animation:marquee 30s linear infinite;white-space:nowrap; }
+.marquee-item { font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);padding:0 40px;display:flex;align-items:center;gap:20px; }
+.marquee-item span { color:var(--gold);font-size:16px; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* SECTION BASE */
+.section { padding:120px 80px;max-width:1400px;margin:0 auto; }
+.section-eyebrow { font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px; }
+.section-eyebrow::before { content:'';width:30px;height:1px;background:var(--gold); }
+.section-title { font-family:var(--serif);font-size:clamp(36px,4vw,60px);font-weight:300;line-height:1.1;margin-bottom:20px; }
+.section-title em { font-style:italic;color:var(--gold); }
+.section-subtitle { font-size:16px;color:var(--text-muted);line-height:1.8;max-width:500px;font-weight:300; }
+
+/* ABOUT */
+.about-grid { display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center;margin-top:80px; }
+.about-visual { position:relative;aspect-ratio:4/5;background:var(--ink-2);border:1px solid var(--border);overflow:hidden; }
+.about-visual::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(201,169,110,0.15) 0%,transparent 60%); }
+.about-accent-box { position:absolute;bottom:-1px;right:-1px;width:55%;background:var(--ink-3);border:1px solid var(--border-bright);padding:28px; }
+.about-accent-box .number { font-family:var(--serif);font-size:52px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:4px; }
+.about-accent-box .label { font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted); }
+.about-geo { position:absolute;top:40px;left:40px;width:80px;height:80px;border:1px solid var(--border-bright);transform:rotate(45deg); }
+.about-geo::before { content:'';position:absolute;inset:10px;border:1px solid var(--border); }
+.about-content { padding-top:20px; }
+.about-content p { font-size:16px;color:var(--text-muted);line-height:1.9;margin-bottom:24px;font-weight:300; }
+.about-values { margin-top:48px;display:flex;flex-direction:column;gap:1px;border:1px solid var(--border); }
+.about-value { padding:20px 24px;display:flex;align-items:center;gap:20px;background:var(--ink-2);transition:background .3s; }
+.about-value:hover { background:var(--mist-2); }
+.value-num { font-family:var(--serif);font-size:24px;color:var(--gold);font-weight:300;min-width:40px; }
+.value-text strong { display:block;font-size:14px;font-weight:500;margin-bottom:2px; }
+.value-text span { font-size:12px;color:var(--text-muted); }
+
+/* SERVICES */
+.services-section { background:var(--ink-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+.services-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:80px; }
+.service-card { background:var(--ink-2);padding:50px 40px;position:relative;overflow:hidden;transition:background .4s; }
+.service-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s ease; }
+.service-card:hover { background:var(--mist); }
+.service-card:hover::before { transform:scaleX(1); }
+.service-icon { width:50px;height:50px;border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;margin-bottom:30px; }
+.service-icon svg { width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+.service-num { position:absolute;top:20px;right:20px;font-family:var(--serif);font-size:64px;color:rgba(201,169,110,0.06);line-height:1;font-weight:300;pointer-events:none; }
+.service-title { font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:16px; }
+.service-desc { font-size:14px;color:var(--text-muted);line-height:1.8;font-weight:300;margin-bottom:30px; }
+.service-link { font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:10px;transition:gap .3s; }
+.service-link:hover { gap:18px; }
+.service-link::after { content:'→'; }
+
+/* PROPERTIES */
+.properties-header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px; }
+.properties-grid { display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:2px;background:var(--border); }
+.property-card { background:var(--ink-2);position:relative;overflow:hidden;min-height:260px;cursor:pointer; }
+.property-card:first-child { grid-row:span 2;min-height:540px; }
+.property-bg { position:absolute;inset:0;transition:transform .6s ease; }
+.property-card:hover .property-bg { transform:scale(1.05); }
+.property-overlay { position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,15,0.95) 0%,rgba(10,10,15,0.3) 60%,transparent 100%); }
+.property-badge { position:absolute;top:20px;left:20px;background:var(--gold);color:var(--ink);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;font-weight:500; }
+.property-info { position:absolute;bottom:0;left:0;right:0;padding:30px; }
+.property-price { font-family:var(--serif);font-size:28px;font-weight:300;color:var(--gold);margin-bottom:6px; }
+.property-card:first-child .property-price { font-size:40px; }
+.property-name { font-size:16px;font-weight:400;margin-bottom:4px; }
+.property-card:first-child .property-name { font-size:22px; }
+.property-zone { font-size:12px;color:var(--text-muted);margin-bottom:16px; }
+.property-meta { display:flex;gap:16px; }
+.property-meta span { font-size:11px;letter-spacing:1px;color:var(--text-muted);display:flex;align-items:center;gap:5px; }
+.property-geo-accent { position:absolute;top:-20px;right:-20px;width:100px;height:100px;border:1px solid rgba(201,169,110,0.1);transform:rotate(45deg); }
+
+/* PROCESS */
+.process-section { background:var(--ink); }
+.process-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);margin-top:80px; }
+.process-step { background:var(--ink-2);padding:40px 32px;position:relative;transition:background .3s; }
+.process-step:hover { background:var(--mist); }
+.step-number { font-family:var(--serif);font-size:72px;font-weight:300;color:rgba(201,169,110,0.12);line-height:1;margin-bottom:20px;transition:color .3s; }
+.process-step:hover .step-number { color:rgba(201,169,110,0.25); }
+.step-title { font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:12px; }
+.step-desc { font-size:13px;color:var(--text-muted);line-height:1.8;font-weight:300; }
+.step-connector { position:absolute;top:40px;right:-1px;width:1px;height:calc(100% - 80px);background:linear-gradient(to bottom,transparent,var(--gold),transparent);opacity:0.3; }
+.process-step:last-child .step-connector { display:none; }
+
+/* ═══════════════════════════════════
+   COTIZADOR — SECCIÓN COMPLETA
+   ═══════════════════════════════════ */
+.cotizador-section { background:var(--ink-2);border-top:1px solid var(--border); }
+.cotizador-wrap { display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start;margin-top:80px; }
+
+.cotizador-info h3 { font-family:var(--serif);font-size:28px;font-weight:300;margin-bottom:16px;line-height:1.3; }
+.cotizador-info p { font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:40px; }
+.info-features { display:flex;flex-direction:column;gap:16px; }
+.info-feature { display:flex;align-items:flex-start;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--border); }
+.feature-dot { width:6px;height:6px;background:var(--gold);border-radius:50%;margin-top:6px;flex-shrink:0; }
+.feature-text strong { display:block;font-size:13px;font-weight:500;margin-bottom:2px; }
+.feature-text span { font-size:12px;color:var(--text-muted); }
+
+/* Model badge chips — estado backend */
+.model-status-row { display:flex;gap:8px;margin-top:32px;flex-wrap:wrap; }
+.model-chip { padding:6px 14px;border:1px solid var(--border);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);transition:all .3s; }
+.model-chip.loaded { border-color:rgba(129,199,132,0.4);color:#81C784; }
+.model-chip.missing { border-color:rgba(229,115,115,0.3);color:#E57373; }
+
+/* FORM */
+.cotizador-form { background:var(--ink);border:1px solid var(--border);padding:50px; }
+
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px; }
+.form-group { position:relative;margin-bottom:0; }
+.form-group label { display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px; }
+.form-group input,
+.form-group select {
+  width:100%;padding:14px 16px;background:var(--ink-2);border:1px solid var(--border);color:var(--text-primary);
+  font-family:var(--sans);font-size:14px;outline:none;transition:border-color .3s;
+  border-radius:0;-webkit-appearance:none;
+}
+.form-group input:focus,
+.form-group select:focus { border-color:var(--gold); }
+.form-group input.error { border-color:var(--error); }
+.form-group select option { background:var(--ink-2); }
+.field-error { font-size:11px;color:var(--error);margin-top:4px;display:none; }
+.field-error.visible { display:block; }
+
+/* Algo selector */
+.algo-label { font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;display:block; }
+.algo-selector { display:flex;gap:1px;background:var(--border);margin-bottom:28px; }
+.algo-btn { flex:1;padding:12px 8px;background:var(--ink-2);border:none;color:var(--text-muted);font-family:var(--sans);font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s; }
+.algo-btn.active { background:var(--gold);color:var(--ink); }
+
+/* Coordenadas */
+.coords-row { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px; }
+.coords-hint { font-size:11px;color:var(--text-dim);margin-bottom:16px;line-height:1.5; }
+.coords-hint a { color:var(--gold);text-decoration:none; }
+
+.form-submit {
+  width:100%;padding:18px;background:var(--gold);border:none;color:var(--ink);font-family:var(--sans);
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .3s,transform .2s;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.form-submit:hover { background:var(--gold-light); }
+.form-submit:active { transform:scale(0.99); }
+.form-submit:disabled { background:var(--text-dim);cursor:not-allowed;color:var(--ink-2); }
+
+/* Spinner */
+.spinner {
+  width:16px;height:16px;border:2px solid rgba(10,10,15,0.3);border-top-color:var(--ink);
+  border-radius:50%;animation:spin .7s linear infinite;display:none;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* Comparar todos */
+.btn-compare {
+  width:100%;margin-top:12px;padding:14px;background:transparent;border:1px solid var(--border-bright);
+  color:var(--gold);font-family:var(--sans);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;
+}
+.btn-compare:hover { background:var(--mist-2); }
+.btn-compare:disabled { opacity:0.4;cursor:not-allowed; }
+
+/* Error banner */
+.error-banner {
+  display:none;background:rgba(229,115,115,0.08);border:1px solid rgba(229,115,115,0.3);
+  color:#E57373;padding:14px 18px;font-size:13px;line-height:1.6;margin-top:16px;
+}
+.error-banner.visible { display:block; }
+
+/* ───── RESULTADO ───── */
+#resultado {
+  margin-top:32px;border-top:1px solid var(--border);padding-top:28px;
+  display:none;animation:fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.result-algo-tag { font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px; }
+.result-price { font-family:var(--serif);font-size:48px;font-weight:300;color:var(--gold);margin-bottom:4px;line-height:1; }
+.result-price-m2 { font-size:13px;color:var(--text-muted);margin-bottom:20px; }
+.result-label { font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:24px; }
+
+/* Métricas */
+.result-metrics { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px; }
+.result-metric { padding:12px 14px;background:var(--ink-2);border:1px solid var(--border); }
+.result-metric .val { font-family:var(--serif);font-size:17px;color:var(--gold);word-break:break-all; }
+.result-metric .key { font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-top:2px; }
+.result-metric .note-tip { font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.4; }
+
+/* Gráfica */
+.chart-label { font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px; }
+#grafica { max-height:220px; }
+
+/* Tabla comparativa */
+#comparativa { margin-top:28px;display:none;animation:fadeUp .4s ease; }
+.compare-title { font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px; }
+.compare-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border); }
+.compare-card { background:var(--ink-2);padding:20px 18px; }
+.compare-card.best { background:var(--mist); }
+.compare-algo { font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px; }
+.compare-price { font-family:var(--serif);font-size:22px;color:var(--gold); }
+.compare-r2 { font-size:11px;color:var(--text-dim);margin-top:4px; }
+.compare-best-badge { font-size:9px;letter-spacing:1px;background:rgba(201,169,110,0.15);color:var(--gold);padding:3px 8px;display:inline-block;margin-top:6px; }
+
+/* ZONAS */
+.zonas-section { background:var(--ink-2);border-top:1px solid var(--border); }
+.zonas-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:2px;background:var(--border);margin-top:80px; }
+.zona-card { background:var(--ink-2);padding:28px 24px;text-align:center;transition:background .3s;cursor:default; }
+.zona-card:hover { background:var(--mist-2); }
+.zona-name { font-family:var(--serif);font-size:15px;color:var(--text-primary);margin-bottom:6px; }
+.zona-price { font-size:11px;color:var(--gold);letter-spacing:1px; }
+.zona-trend { display:inline-block;margin-top:8px;font-size:10px;padding:3px 8px;background:rgba(201,169,110,0.1);color:var(--gold);letter-spacing:1px; }
+
+/* TESTIMONIALS */
+.testimonials-section { background:var(--ink); }
+.testimonials-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);margin-top:80px; }
+.testimonial-card { background:var(--ink-2);padding:44px 36px; }
+.testimonial-quote { font-family:var(--serif);font-size:56px;color:var(--gold);line-height:0.6;margin-bottom:20px;opacity:0.4; }
+.testimonial-text { font-family:var(--serif);font-size:18px;font-weight:300;line-height:1.6;font-style:italic;color:var(--text-primary);margin-bottom:32px; }
+.testimonial-author { display:flex;align-items:center;gap:16px;padding-top:24px;border-top:1px solid var(--border); }
+.author-avatar { width:44px;height:44px;border-radius:50%;background:var(--ink-3);border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:var(--gold); }
+.author-name { font-size:13px;font-weight:500;margin-bottom:2px; }
+.author-role { font-size:11px;color:var(--text-muted); }
+
+/* CONTACT */
+.contact-section { background:var(--ink);border-top:1px solid var(--border); }
+.contact-grid { display:grid;grid-template-columns:1.2fr 1fr;gap:100px;align-items:center;margin-top:80px; }
+.contact-big { font-family:var(--serif);font-size:clamp(40px,5vw,72px);font-weight:300;line-height:1.05; }
+.contact-big em { font-style:italic;color:var(--gold); }
+.contact-info { display:flex;flex-direction:column;gap:32px; }
+.contact-item { padding:24px 0;border-bottom:1px solid var(--border); }
+.contact-item:first-child { border-top:1px solid var(--border); }
+.contact-label { font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
+.contact-value { font-size:16px;color:var(--text-primary);font-weight:300; }
+
+/* FOOTER */
+footer { border-top:1px solid var(--border);padding:40px 80px;display:flex;justify-content:space-between;align-items:center;background:var(--ink-2); }
+.footer-logo { font-family:var(--serif);font-size:18px;letter-spacing:4px;text-transform:uppercase;color:var(--gold); }
+.footer-copy { font-size:12px;color:var(--text-dim);letter-spacing:1px; }
+.footer-links { display:flex;gap:32px; }
+.footer-links a { font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color .3s; }
+.footer-links a:hover { color:var(--gold); }
+
+/* SCROLL INDICATOR */
+.scroll-indicator { position:absolute;bottom:40px;left:80px;display:flex;flex-direction:column;align-items:center;gap:10px; }
+.scroll-indicator span { font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);writing-mode:vertical-rl; }
+.scroll-line { width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollPulse 2s ease infinite; }
+@keyframes scrollPulse { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+
+/* ANIMATIONS */
+.reveal { opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease; }
+.reveal.visible { opacity:1;transform:translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width:1100px) {
+  .hero { grid-template-columns:1fr; }
+  .hero-right { display:none; }
+  .hero-left { padding:140px 40px 80px; }
+  nav { padding:20px 40px; }
+  nav.scrolled { padding:16px 40px; }
+  .section { padding:80px 40px; }
+  .about-grid { grid-template-columns:1fr;gap:60px; }
+  .services-grid { grid-template-columns:1fr; }
+  .properties-grid { grid-template-columns:1fr 1fr; }
+  .property-card:first-child { grid-column:span 2;grid-row:span 1; }
+  .process-steps { grid-template-columns:1fr 1fr; }
+  .cotizador-wrap { grid-template-columns:1fr; }
+  .testimonials-grid { grid-template-columns:1fr; }
+  .zonas-grid { grid-template-columns:repeat(3,1fr); }
+  .contact-grid { grid-template-columns:1fr; }
+  footer { flex-direction:column;gap:20px;text-align:center;padding:40px; }
+  body { cursor:auto; }
+  .cursor,.cursor-ring { display:none; }
+  .result-metrics { grid-template-columns:1fr 1fr; }
+  .compare-grid { grid-template-columns:1fr; }
+}
+@media (max-width:700px) {
+  nav { padding:16px 24px; }
+  .hero-left { padding:100px 24px 60px; }
+  .section { padding:60px 24px; }
+  .properties-grid { grid-template-columns:1fr; }
+  .property-card:first-child { grid-column:span 1; }
+  .process-steps { grid-template-columns:1fr; }
+  .zonas-grid { grid-template-columns:repeat(2,1fr); }
+  .form-row,.coords-row { grid-template-columns:1fr; }
+  footer { padding:30px 24px; }
+  .nav-links { display:none; }
+  .cotizador-form { padding:30px 24px; }
+  .result-metrics { grid-template-columns:1fr 1fr; }
+  .result-price { font-size:36px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">MG</a>
+  <ul class="nav-links">
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#propiedades">Propiedades</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#cotizador">Cotizar</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Contacto</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+    <div class="hero-eyebrow">Real Estate Intelligence · CDMX</div>
+    <h1 class="hero-title">El valor <em>real</em><br>de tu<br>propiedad</h1>
+    <p class="hero-subtitle">Combinamos inteligencia artificial con más de una década de experiencia en el mercado inmobiliario de la Ciudad de México para ofrecerte valuaciones precisas y decisiones informadas.</p>
+    <div class="hero-actions">
+      <a href="#cotizador" class="btn-primary">Cotizar propiedad</a>
+      <a href="#nosotros" class="btn-ghost"><span class="arrow"></span>Conocer más</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image-wrap">
+      <div class="hero-grid-lines"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" style="width:70%;opacity:0.6">
+          <rect x="80" y="200" width="240" height="300" fill="none" stroke="rgba(201,169,110,0.3)" stroke-width="1"/>
+          <rect x="100" y="180" width="200" height="320" fill="none" stroke="rgba(201,169,110,0.15)" stroke-width="0.5"/>
+          <rect x="120" y="220" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="180" y="220" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="240" y="220" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="120" y="300" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="180" y="300" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="240" y="300" width="40" height="60" fill="rgba(201,169,110,0.05)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="155" y="380" width="90" height="120" fill="rgba(201,169,110,0.04)" stroke="rgba(201,169,110,0.25)" stroke-width="0.5"/>
+          <line x1="80" y1="500" x2="320" y2="500" stroke="rgba(201,169,110,0.3)" stroke-width="1"/>
+          <rect x="140" y="100" width="120" height="100" fill="none" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
+          <rect x="160" y="60" width="80" height="40" fill="none" stroke="rgba(201,169,110,0.15)" stroke-width="0.5"/>
+          <polygon points="150,100 200,40 250,100" fill="none" stroke="rgba(201,169,110,0.25)" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-number" id="stat1">12+</div><div class="hero-stat-label">Años en el mercado</div></div>
+      <div class="hero-stat"><div class="hero-stat-number" id="stat2">4.8K</div><div class="hero-stat-label">Propiedades valuadas</div></div>
+      <div class="hero-stat"><div class="hero-stat-number" id="stat3">3</div><div class="hero-stat-label">Modelos de IA activos</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>◆</span> Polanco</div><div class="marquee-item"><span>◆</span> Santa Fe</div>
+    <div class="marquee-item"><span>◆</span> Condesa</div><div class="marquee-item"><span>◆</span> Roma Norte</div>
+    <div class="marquee-item"><span>◆</span> Lomas de Chapultepec</div><div class="marquee-item"><span>◆</span> Del Valle</div>
+    <div class="marquee-item"><span>◆</span> Nápoles</div><div class="marquee-item"><span>◆</span> Interlomas</div>
+    <div class="marquee-item"><span>◆</span> Insurgentes Sur</div><div class="marquee-item"><span>◆</span> Coyoacán</div>
+    <div class="marquee-item"><span>◆</span> Polanco</div><div class="marquee-item"><span>◆</span> Santa Fe</div>
+    <div class="marquee-item"><span>◆</span> Condesa</div><div class="marquee-item"><span>◆</span> Roma Norte</div>
+    <div class="marquee-item"><span>◆</span> Lomas de Chapultepec</div><div class="marquee-item"><span>◆</span> Del Valle</div>
+    <div class="marquee-item"><span>◆</span> Nápoles</div><div class="marquee-item"><span>◆</span> Interlomas</div>
+    <div class="marquee-item"><span>◆</span> Insurgentes Sur</div><div class="marquee-item"><span>◆</span> Coyoacán</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="nosotros">
+  <div class="section-eyebrow">Quiénes somos</div>
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="about-geo"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);text-align:center;">
+        <div style="font-family:var(--serif);font-size:100px;font-weight:300;color:rgba(201,169,110,0.08);line-height:1;">MG</div>
+        <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);">Est. 2012</div>
+      </div>
+      <div class="about-accent-box"><div class="number">4,812</div><div class="label">Valuaciones realizadas</div></div>
+    </div>
+    <div class="about-content reveal">
+      <div class="section-eyebrow">Nuestra historia</div>
+      <h2 class="section-title">Precisión<br>que <em>transforma</em><br>decisiones</h2>
+      <p>Desde 2012, MG Real Estate ha redefinido la valuación inmobiliaria en CDMX. No somos solo una plataforma tecnológica: somos un equipo de expertos que entiende los matices de cada colonia, cada calle y cada tipo de propiedad.</p>
+      <p>Nuestros modelos de inteligencia artificial —Random Forest, XGBoost y LightGBM— procesan miles de transacciones históricas, datos de mercado y variables contextuales para entregar valuaciones con alta precisión.</p>
+      <div class="about-values">
+        <div class="about-value"><span class="value-num">01</span><div class="value-text"><strong>Precisión sin compromisos</strong><span>Modelos calibrados con datos reales del mercado mexicano</span></div></div>
+        <div class="about-value"><span class="value-num">02</span><div class="value-text"><strong>Transparencia total</strong><span>Explicamos cada factor que afecta el valor de tu propiedad</span></div></div>
+        <div class="about-value"><span class="value-num">03</span><div class="value-text"><strong>Experiencia local</strong><span>Doce años analizando el mercado inmobiliario de la Ciudad de México</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section">
+  <div class="section" id="servicios">
+    <div class="section-eyebrow">Nuestros servicios</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <h2 class="section-title">Todo lo que<br>necesitas para<br><em>invertir bien</em></h2>
+      <p class="section-subtitle" style="max-width:320px;">Soluciones completas para compradores, vendedores e inversionistas en el mercado CDMX.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-card"><div class="service-num">01</div><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><h3 class="service-title">Valuación residencial</h3><p class="service-desc">Estimación precisa del valor de mercado de casas y departamentos en cualquier alcaldía de CDMX, con análisis comparativo de zona.</p><a href="#cotizador" class="service-link">Cotizar ahora</a></div>
+      <div class="service-card"><div class="service-num">02</div><div class="service-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="1"/><path d="M8 21h8M12 17v4"/></svg></div><h3 class="service-title">Análisis de inversión</h3><p class="service-desc">Evaluamos el potencial de retorno de cualquier propiedad: rendimiento por renta, plusvalía proyectada y comparativos de mercado.</p><a href="#contacto" class="service-link">Consultar</a></div>
+      <div class="service-card"><div class="service-num">03</div><div class="service-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><h3 class="service-title">Monitoreo de mercado</h3><p class="service-desc">Reportes mensuales de tendencias por colonia, alertas de precio y análisis de volatilidad para tomar decisiones con datos frescos.</p><a href="#contacto" class="service-link">Suscribirse</a></div>
+      <div class="service-card"><div class="service-num">04</div><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.12 0 4.07.74 5.61 1.97"/></svg></div><h3 class="service-title">Due diligence</h3><p class="service-desc">Verificación jurídica y técnica completa antes de cualquier transacción. Revisión de escrituras, adeudos, y estado físico del inmueble.</p><a href="#contacto" class="service-link">Solicitar</a></div>
+      <div class="service-card"><div class="service-num">05</div><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><h3 class="service-title">Portafolio inmobiliario</h3><p class="service-desc">Gestión y optimización de portafolios de múltiples propiedades, con reportes consolidados y estrategias de diversificación.</p><a href="#contacto" class="service-link">Más información</a></div>
+      <div class="service-card"><div class="service-num">06</div><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><h3 class="service-title">Asesoría personalizada</h3><p class="service-desc">Acompañamiento one-to-one con nuestros especialistas para compradores primerizos o inversionistas que buscan expandir su patrimonio.</p><a href="#contacto" class="service-link">Agendar sesión</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPERTIES -->
+<section class="section" id="propiedades">
+  <div class="properties-header reveal">
+    <div><div class="section-eyebrow">Propiedades destacadas</div><h2 class="section-title">Oportunidades<br><em>seleccionadas</em></h2></div>
+    <a href="#contacto" class="btn-ghost"><span class="arrow"></span>Ver todo el catálogo</a>
+  </div>
+  <div class="properties-grid reveal">
+    <div class="property-card">
+      <div class="property-bg" style="background:linear-gradient(160deg,#1a1f35,#0d1020);"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.15;"><svg viewBox="0 0 200 300" width="160" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="100" width="120" height="200" fill="none" stroke="#C9A96E" stroke-width="0.8"/><rect x="60" y="80" width="80" height="220" fill="none" stroke="#C9A96E" stroke-width="0.5"/><rect x="70" y="115" width="25" height="35" fill="rgba(201,169,110,0.1)" stroke="#C9A96E" stroke-width="0.5"/><rect x="105" y="115" width="25" height="35" fill="rgba(201,169,110,0.1)" stroke="#C9A96E" stroke-width="0.5"/><rect x="70" y="165" width="25" height="35" fill="rgba(201,169,110,0.1)" stroke="#C9A96E" stroke-width="0.5"/><rect x="105" y="165" width="25" height="35" fill="rgba(201,169,110,0.1)" stroke="#C9A96E" stroke-width="0.5"/><rect x="85" y="215" width="30" height="85" fill="rgba(201,169,110,0.06)" stroke="#C9A96E" stroke-width="0.5"/><polygon points="60,80 100,40 140,80" fill="none" stroke="#C9A96E" stroke-width="0.8"/></svg></div>
+      <div class="property-geo-accent"></div><div class="property-overlay"></div>
+      <span class="property-badge">Exclusivo</span>
+      <div class="property-info"><div class="property-price">$18,500,000</div><div class="property-name">Penthouse Torre Ámsterdam</div><div class="property-zone">Condesa · CDMX</div><div class="property-meta"><span data-icon="⊡">320 m²</span><span data-icon="⊡">4 recámaras</span><span data-icon="⊡">3.5 baños</span><span data-icon="⊡">2 cajones</span></div></div>
+    </div>
+    <div class="property-card"><div class="property-bg" style="background:linear-gradient(135deg,#1e1a2e,#0e0d1a);"></div><div class="property-overlay"></div><span class="property-badge" style="background:rgba(201,169,110,0.15);color:var(--gold);border:1px solid var(--border-bright);">Nueva</span><div class="property-info"><div class="property-price">$6,200,000</div><div class="property-name">Depto. Insurgentes</div><div class="property-zone">Roma Norte · CDMX</div><div class="property-meta"><span data-icon="⊡">110 m²</span><span data-icon="⊡">2 rec.</span></div></div></div>
+    <div class="property-card"><div class="property-bg" style="background:linear-gradient(135deg,#1a2820,#0d1510);"></div><div class="property-overlay"></div><span class="property-badge" style="background:rgba(201,169,110,0.15);color:var(--gold);border:1px solid var(--border-bright);">Inversión</span><div class="property-info"><div class="property-price">$9,800,000</div><div class="property-name">Casa Polanco</div><div class="property-zone">Polanco · CDMX</div><div class="property-meta"><span data-icon="⊡">180 m²</span><span data-icon="⊡">3 rec.</span></div></div></div>
+    <div class="property-card"><div class="property-bg" style="background:linear-gradient(135deg,#2a1a1a,#150d0d);"></div><div class="property-overlay"></div><div class="property-info"><div class="property-price">$4,350,000</div><div class="property-name">Estudio Santa Fe</div><div class="property-zone">Santa Fe · CDMX</div><div class="property-meta"><span data-icon="⊡">68 m²</span><span data-icon="⊡">1 rec.</span></div></div></div>
+    <div class="property-card"><div class="property-bg" style="background:linear-gradient(135deg,#1a2028,#0d1018);"></div><div class="property-overlay"></div><div class="property-info"><div class="property-price">$12,000,000</div><div class="property-name">Residencia Coyoacán</div><div class="property-zone">Coyoacán · CDMX</div><div class="property-meta"><span data-icon="⊡">240 m²</span><span data-icon="⊡">4 rec.</span></div></div></div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section">
+  <div class="section" id="proceso">
+    <div class="section-eyebrow">Cómo funciona</div>
+    <h2 class="section-title">Un proceso <em>claro</em><br>de principio a fin</h2>
+    <div class="process-steps reveal">
+      <div class="process-step"><div class="step-connector"></div><div class="step-number">01</div><h3 class="step-title">Ingresa los datos</h3><p class="step-desc">Proporciona las características básicas de tu propiedad: tipo, superficie, alcaldía y coordenadas GPS.</p></div>
+      <div class="process-step"><div class="step-connector"></div><div class="step-number">02</div><h3 class="step-title">Elige el modelo</h3><p class="step-desc">Selecciona entre Random Forest, XGBoost o LightGBM — o compara los tres simultáneamente.</p></div>
+      <div class="process-step"><div class="step-connector"></div><div class="step-number">03</div><h3 class="step-title">Recibes el reporte</h3><p class="step-desc">Obtienes el precio estimado, métricas de confianza (R², MAE, RMSE, MAPE) y comparativa de zona en tiempo real.</p></div>
+      <div class="process-step"><div class="step-number">04</div><h3 class="step-title">Tomamos acción</h3><p class="step-desc">Un asesor MG te contacta para afinar la valuación y acompañarte en el proceso de compra, venta o inversión.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     COTIZADOR — SECCIÓN PRINCIPAL
+     ═══════════════════════════════════════════ -->
+<section class="cotizador-section">
+  <div class="section" id="cotizador">
+    <div class="section-eyebrow">Herramienta de valuación</div>
+    <h2 class="section-title">Cotizador<br><em>Inteligente</em></h2>
+
+    <div class="cotizador-wrap">
+      <!-- INFO LATERAL -->
+      <div class="cotizador-info reveal">
+        <h3>Valuación basada en inteligencia artificial</h3>
+        <p>Tres modelos predictivos entrenados con miles de transacciones reales de CDMX estiman el valor de tu propiedad en segundos. Elige el algoritmo o compáralos todos.</p>
+        <div class="info-features">
+          <div class="info-feature"><div class="feature-dot"></div><div class="feature-text"><strong>Random Forest</strong><span>Robusto y explicable. Excelente para propiedades estándar.</span></div></div>
+          <div class="info-feature"><div class="feature-dot"></div><div class="feature-text"><strong>XGBoost</strong><span>Mayor R² en validación cruzada (~0.858). Muy preciso en zonas de alta densidad de datos.</span></div></div>
+          <div class="info-feature"><div class="feature-dot"></div><div class="feature-text"><strong>LightGBM</strong><span>Mejor R² en escala MXN (~0.74). Ideal para propiedades de alta gama.</span></div></div>
+          <div class="info-feature"><div class="feature-dot"></div><div class="feature-text"><strong>Comparativa instantánea</strong><span>Los tres modelos en paralelo para que elijas con información completa.</span></div></div>
+        </div>
+        <!-- Estado de modelos en el backend -->
+        <div class="model-status-row" id="modelChips">
+          <div class="model-chip" id="chip-rf">RF ···</div>
+          <div class="model-chip" id="chip-xgb">XGB ···</div>
+          <div class="model-chip" id="chip-lgbm">LGBM ···</div>
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div class="cotizador-form reveal">
+
+        <!-- Tipo de propiedad -->
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Tipo de propiedad</label>
+          <select id="property_type">
+            <option value="apartment">Departamento (Apartment)</option>
+            <option value="house">Casa (House)</option>
+            <option value="PH">Penthouse (PH)</option>
+            <option value="store">Local comercial (Store)</option>
+          </select>
+        </div>
+
+        <!-- Alcaldía -->
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Alcaldía</label>
+          <select id="place">
+            <option value="">— Selecciona alcaldía —</option>
+            <option value="AlvaroObregon">Álvaro Obregón</option>
+            <option value="Azcapotzalco">Azcapotzalco</option>
+            <option value="BenitoJuarez">Benito Juárez</option>
+            <option value="Coyoacan">Coyoacán</option>
+            <option value="CuajimalpaDeMorelos">Cuajimalpa de Morelos</option>
+            <option value="Cuauhtemoc">Cuauhtémoc</option>
+            <option value="GustavoAMadero">Gustavo A. Madero</option>
+            <option value="Iztacalco">Iztacalco</option>
+            <option value="Iztapalapa">Iztapalapa</option>
+            <option value="LaMagdalenaContreras">La Magdalena Contreras</option>
+            <option value="MiguelHidalgo">Miguel Hidalgo</option>
+            <option value="Milpa Alta">Milpa Alta</option>
+            <option value="Tlahuac">Tláhuac</option>
+            <option value="Tlalpan">Tlalpan</option>
+            <option value="VenustianoCarranza">Venustiano Carranza</option>
+            <option value="Xochimilco">Xochimilco</option>
+          </select>
+          <div class="field-error" id="err-place">Selecciona una alcaldía válida.</div>
+        </div>
+
+        <!-- Superficies -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Superficie total (m²)</label>
+            <input type="number" id="surface_total" placeholder="Ej. 120" min="10" max="5000">
+            <div class="field-error" id="err-total">Entre 10 y 5,000 m².</div>
+          </div>
+          <div class="form-group">
+            <label>Superficie cubierta (m²)</label>
+            <input type="number" id="surface_covered" placeholder="Ej. 110" min="10" max="5000">
+            <div class="field-error" id="err-covered">Entre 10 y 5,000 m².</div>
+          </div>
+        </div>
+
+        <!-- Coordenadas -->
+        <p class="coords-hint">
+          Coordenadas GPS de la propiedad
+          (<a href="https://maps.google.com" target="_blank" rel="noopener">búscala en Google Maps</a>
+          → clic derecho → copiar coordenadas).
+        </p>
+        <div class="coords-row">
+          <div class="form-group">
+            <label>Latitud</label>
+            <input type="number" id="lat" placeholder="Ej. 19.4326" step="0.0001" min="19.05" max="19.65">
+            <div class="field-error" id="err-lat">Rango CDMX: 19.05 – 19.65</div>
+          </div>
+          <div class="form-group">
+            <label>Longitud</label>
+            <input type="number" id="lon" placeholder="Ej. -99.1332" step="0.0001" min="-99.55" max="-98.90">
+            <div class="field-error" id="err-lon">Rango CDMX: -99.55 – -98.90</div>
+          </div>
+        </div>
+
+        <!-- Selector de algoritmo -->
+        <span class="algo-label">Algoritmo de valuación</span>
+        <div class="algo-selector">
+          <button class="algo-btn" onclick="setAlgo(this,'rf')">Random Forest</button>
+          <button class="algo-btn active" onclick="setAlgo(this,'xgb')">XGBoost</button>
+          <button class="algo-btn" onclick="setAlgo(this,'lgbm')">LightGBM</button>
+        </div>
+        <input type="hidden" id="algorithm" value="xgb">
+
+        <!-- Botones -->
+        <button class="form-submit" id="btnPredict" onclick="predecir()">
+          <div class="spinner" id="spinner"></div>
+          <span id="btnText">Calcular valuación</span>
+        </button>
+        <button class="btn-compare" id="btnCompare" onclick="comparar()">Comparar los 3 modelos</button>
+
+        <!-- Banner de error global -->
+        <div class="error-banner" id="errorBanner"></div>
+
+        <!-- ── RESULTADO INDIVIDUAL ── -->
+        <div id="resultado">
+          <div class="result-algo-tag" id="resAlgo"></div>
+          <div class="result-price" id="precio"></div>
+          <div class="result-price-m2" id="precioM2"></div>
+          <div class="result-label">Precio estimado de mercado · MXN</div>
+          <div class="result-metrics">
+            <div class="result-metric">
+              <div class="val" id="res-r2">—</div>
+              <div class="key">R² CV</div>
+              <div class="note-tip">Coef. determinación</div>
+            </div>
+            <div class="result-metric">
+              <div class="val" id="res-mape">—</div>
+              <div class="key">MAPE</div>
+              <div class="note-tip">Error % promedio</div>
+            </div>
+            <div class="result-metric">
+              <div class="val" id="res-mae">—</div>
+              <div class="key">MAE</div>
+              <div class="note-tip">Error abs. medio</div>
+            </div>
+            <div class="result-metric">
+              <div class="val" id="res-rmse">—</div>
+              <div class="key">RMSE</div>
+              <div class="note-tip">Raíz del error cuadrático</div>
+            </div>
+          </div>
+          <div class="chart-label">Tu propiedad vs. promedio de la alcaldía</div>
+          <canvas id="grafica"></canvas>
+        </div>
+
+        <!-- ── COMPARATIVA 3 MODELOS ── -->
+        <div id="comparativa">
+          <div class="compare-title">Comparativa de modelos</div>
+          <div class="compare-grid" id="compareGrid"></div>
+          <div class="chart-label" style="margin-top:20px;">Predicción por modelo vs. promedio de zona</div>
+          <canvas id="graficaCompare" style="max-height:220px;margin-top:8px;"></canvas>
+        </div>
+
+      </div><!-- /cotizador-form -->
+    </div><!-- /cotizador-wrap -->
+  </div>
+</section>
+
+<!-- ZONAS -->
+<section class="zonas-section">
+  <div class="section">
+    <div class="section-eyebrow">Mercado por zona</div>
+    <h2 class="section-title">Precios promedio<br>en <em>CDMX</em></h2>
+    <div class="zonas-grid reveal">
+      <div class="zona-card"><div class="zona-name">Polanco</div><div class="zona-price">$85,000/m²</div><div class="zona-trend">↑ 8.4%</div></div>
+      <div class="zona-card"><div class="zona-name">Condesa</div><div class="zona-price">$62,000/m²</div><div class="zona-trend">↑ 5.1%</div></div>
+      <div class="zona-card"><div class="zona-name">Roma Norte</div><div class="zona-price">$58,000/m²</div><div class="zona-trend">↑ 6.3%</div></div>
+      <div class="zona-card"><div class="zona-name">Santa Fe</div><div class="zona-price">$52,000/m²</div><div class="zona-trend">↑ 3.8%</div></div>
+      <div class="zona-card"><div class="zona-name">Lomas</div><div class="zona-price">$75,000/m²</div><div class="zona-trend">↑ 4.2%</div></div>
+      <div class="zona-card"><div class="zona-name">Del Valle</div><div class="zona-price">$38,000/m²</div><div class="zona-trend">↑ 7.1%</div></div>
+      <div class="zona-card"><div class="zona-name">Coyoacán</div><div class="zona-price">$42,000/m²</div><div class="zona-trend">↑ 5.9%</div></div>
+      <div class="zona-card"><div class="zona-name">Interlomas</div><div class="zona-price">$44,000/m²</div><div class="zona-trend">↑ 4.6%</div></div>
+      <div class="zona-card"><div class="zona-name">Nápoles</div><div class="zona-price">$36,000/m²</div><div class="zona-trend">↑ 6.8%</div></div>
+      <div class="zona-card"><div class="zona-name">Insurgentes</div><div class="zona-price">$49,000/m²</div><div class="zona-trend">↑ 5.5%</div></div>
+      <div class="zona-card"><div class="zona-name">Satélite</div><div class="zona-price">$32,000/m²</div><div class="zona-trend">↑ 3.1%</div></div>
+      <div class="zona-card"><div class="zona-name">Narvarte</div><div class="zona-price">$35,000/m²</div><div class="zona-trend">↑ 7.4%</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="section">
+    <div class="section-eyebrow">Lo que dicen nuestros clientes</div>
+    <h2 class="section-title">Confianza<br>construida con<br><em>resultados</em></h2>
+    <div class="testimonials-grid reveal">
+      <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">La valuación de MG estuvo a menos del 2% del precio final de venta. Su precisión me ahorró semanas de negociación.</p><div class="testimonial-author"><div class="author-avatar">AC</div><div><div class="author-name">Alejandro Cortés</div><div class="author-role">Inversionista privado · Polanco</div></div></div></div>
+      <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">Como comprador primerizo, necesitaba certeza. El equipo de MG me explicó cada detalle con una paciencia y profesionalismo que no encontré en ningún otro lugar.</p><div class="testimonial-author"><div class="author-avatar">MR</div><div><div class="author-name">María Rodríguez</div><div class="author-role">Compradora · Roma Norte</div></div></div></div>
+      <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">Gestiono 12 propiedades de renta y el dashboard de MG me da visibilidad total del portafolio. Una herramienta indispensable para cualquier inversionista serio.</p><div class="testimonial-author"><div class="author-avatar">JP</div><div><div class="author-name">Jorge Peralta</div><div class="author-role">Portfolio manager · CDMX</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section">
+  <div class="section" id="contacto">
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="section-eyebrow">Contacto</div>
+        <h2 class="contact-big">Hablemos de<br>tu próxima<br><em>inversión</em></h2>
+        <p style="color:var(--text-muted);font-size:15px;margin-top:24px;line-height:1.8;max-width:400px;font-weight:300;">Nuestro equipo está disponible para agendar una consulta personalizada sin costo ni compromiso.</p>
+        <div style="margin-top:48px;"><a href="mailto:hola@mgrealestate.mx" class="btn-primary">hola@mgrealestate.mx</a></div>
+      </div>
+      <div class="contact-info reveal">
+        <div class="contact-item"><div class="contact-label">Oficina principal</div><div class="contact-value">Presidente Masaryk 123, Polanco<br>Ciudad de México, CDMX</div></div>
+        <div class="contact-item"><div class="contact-label">Teléfono</div><div class="contact-value">+52 (55) 1234 5678</div></div>
+        <div class="contact-item"><div class="contact-label">Horario de atención</div><div class="contact-value">Lunes a viernes · 9:00 – 18:00</div></div>
+        <div class="contact-item"><div class="contact-label">WhatsApp directo</div><div class="contact-value">+52 (55) 9876 5432</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MG Real Estate</div>
+  <div class="footer-copy">© 2026 MG Real Estate · CDMX · Todos los derechos reservados</div>
+  <div class="footer-links"><a href="#">Privacidad</a><a href="#">Términos</a><a href="#">LinkedIn</a></div>
+</footer>
+
+<!-- ═══════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════ -->
+<script>
+/* ─── Config ─────────────────────────────────────── */
+const API_BASE = '';   // vacío = mismo origen Flask. En dev: 'http://localhost:5000'
+
+/* ─── Cursor (solo desktop) ──────────────────────── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+if (cursor && ring && window.innerWidth > 1100) {
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cursor.style.left=(mx-4)+'px'; cursor.style.top=(my-4)+'px';
+  });
+  (function animRing(){
+    rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+    ring.style.left=(rx-18)+'px'; ring.style.top=(ry-18)+'px';
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a,button,.property-card,.service-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>ring.classList.add('expand'));
+    el.addEventListener('mouseleave',()=>ring.classList.remove('expand'));
+  });
+}
+
+/* ─── Nav scroll ─────────────────────────────────── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY>60);
+});
+
+/* ─── Reveal on scroll ───────────────────────────── */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      e.target.style.transitionDelay=(i%4*0.1)+'s';
+      e.target.classList.add('visible');
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
+
+/* ─── Algo selector ──────────────────────────────── */
+function setAlgo(btn, val){
+  document.querySelectorAll('.algo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('algorithm').value = val;
+}
+
+/* ─── Helpers de formato ─────────────────────────── */
+const fmtMXN = n => '$' + Math.round(n).toLocaleString('es-MX');
+const fmtMil = n => {
+  if(n>=1e6) return '$'+( n/1e6 ).toFixed(2)+'M';
+  if(n>=1e3) return '$'+( n/1e3 ).toFixed(0)+'K';
+  return fmtMXN(n);
+};
+
+/* ─── Chart.js defaults ──────────────────────────── */
+Chart.defaults.color = '#8A8478';
+Chart.defaults.font.family = 'DM Sans';
+
+let chartSingle = null;
+let chartCompare = null;
+
+function buildBarChart(canvasId, labels, values, zone){
+  const ctx = document.getElementById(canvasId);
+  const allVals = [...values, zone];
+  const colors = values.map(()=>'rgba(201,169,110,0.85)');
+  colors.push('rgba(201,169,110,0.25)');
+  const borders = values.map(()=>'#C9A96E');
+  borders.push('rgba(201,169,110,0.5)');
+
+  return new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:[...labels,'Promedio zona'],
+      datasets:[{
+        data:[...values, zone],
+        backgroundColor:colors,
+        borderColor:borders,
+        borderWidth:1,
+        borderRadius:0
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8A8478',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(201,169,110,0.15)'}},
+        y:{ticks:{color:'#8A8478',font:{size:11},callback:v=>'$'+Math.round(v/1e6*10)/10+'M'},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(201,169,110,0.15)'}}
+      }
+    }
+  });
+}
+
+/* ─── Validación cliente ─────────────────────────── */
+function clearErrors(){
+  document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('visible'));
+  document.querySelectorAll('input,select').forEach(e=>e.classList.remove('error'));
+  document.getElementById('errorBanner').classList.remove('visible');
+}
+
+function showError(id, inputId){
+  document.getElementById(id).classList.add('visible');
+  if(inputId) document.getElementById(inputId).classList.add('error');
+}
+
+function showBanner(msg){
+  const b = document.getElementById('errorBanner');
+  b.textContent = msg;
+  b.classList.add('visible');
+}
+
+function getFormData(){
+  return {
+    property_type:   document.getElementById('property_type').value,
+    place:           document.getElementById('place').value,
+    surface_total:   parseFloat(document.getElementById('surface_total').value),
+    surface_covered: parseFloat(document.getElementById('surface_covered').value),
+    lat:             parseFloat(document.getElementById('lat').value),
+    lon:             parseFloat(document.getElementById('lon').value),
+    model:           document.getElementById('algorithm').value,
+  };
+}
+
+function validateForm(d){
+  let ok = true;
+  clearErrors();
+  if(!d.place){ showError('err-place','place'); ok=false; }
+  if(isNaN(d.surface_total)||d.surface_total<10||d.surface_total>5000){ showError('err-total','surface_total'); ok=false; }
+  if(isNaN(d.surface_covered)||d.surface_covered<10||d.surface_covered>5000){ showError('err-covered','surface_covered'); ok=false; }
+  if(isNaN(d.lat)||d.lat<19.05||d.lat>19.65){ showError('err-lat','lat'); ok=false; }
+  if(isNaN(d.lon)||d.lon<-99.55||d.lon>-98.90){ showError('err-lon','lon'); ok=false; }
+  return ok;
+}
+
+/* ─── Estado del botón ───────────────────────────── */
+function setLoading(on){
+  const btn = document.getElementById('btnPredict');
+  const cmp = document.getElementById('btnCompare');
+  document.getElementById('spinner').style.display = on ? 'block' : 'none';
+  document.getElementById('btnText').textContent    = on ? 'Calculando…' : 'Calcular valuación';
+  btn.disabled = on;
+  cmp.disabled = on;
+}
+
+/* ─── PREDECIR (un modelo) ───────────────────────── */
+async function predecir(){
+  const d = getFormData();
+  if(!validateForm(d)) return;
+  setLoading(true);
+  document.getElementById('resultado').style.display='none';
+  document.getElementById('comparativa').style.display='none';
+
+  try {
+    const res  = await fetch(API_BASE+'/api/predict', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(d)
+    });
+    const data = await res.json();
+
+    if(!data.success){ showBanner(data.error || 'Error desconocido.'); return; }
+
+    // Rellenar resultado
+    document.getElementById('resAlgo').textContent   = '▸ ' + (data.algorithm||d.model).toUpperCase();
+    document.getElementById('precio').textContent    = fmtMXN(data.predicted_price);
+    document.getElementById('precioM2').textContent  = fmtMXN(data.predicted_price_m2) + ' / m²';
+    document.getElementById('res-r2').textContent    = (data.metrics.r2_cv*100).toFixed(1)+'%';
+    document.getElementById('res-mape').textContent  = data.metrics.mape.toFixed(1)+'%';
+    document.getElementById('res-mae').textContent   = fmtMil(data.metrics.mae);
+    document.getElementById('res-rmse').textContent  = fmtMil(data.metrics.rmse);
+    document.getElementById('resultado').style.display='block';
+
+    // Gráfica
+    if(chartSingle){ chartSingle.destroy(); chartSingle=null; }
+    chartSingle = buildBarChart('grafica',['Tu propiedad'],[data.predicted_price], data.zone_median);
+
+  } catch(err){
+    showBanner('No se pudo conectar con el servidor Flask. Verifica que app.py esté corriendo.');
+    console.error(err);
+  } finally { setLoading(false); }
+}
+
+/* ─── COMPARAR (3 modelos) ───────────────────────── */
+async function comparar(){
+  const d = getFormData();
+  if(!validateForm(d)) return;
+  setLoading(true);
+  document.getElementById('resultado').style.display='none';
+  document.getElementById('comparativa').style.display='none';
+
+  try {
+    const res  = await fetch(API_BASE+'/api/compare', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(d)
+    });
+    const data = await res.json();
+    if(!data.success){ showBanner(data.error||'Error en comparativa.'); return; }
+
+    // Determinar el modelo con mayor precio predicho como "mejor"
+    const valid = data.results.filter(r=>r.success);
+    if(!valid.length){ showBanner('Ningún modelo disponible en el servidor.'); return; }
+
+    const maxPrice = Math.max(...valid.map(r=>r.predicted_price));
+
+    // Renderizar tarjetas
+    const grid = document.getElementById('compareGrid');
+    grid.innerHTML = '';
+    data.results.forEach(r=>{
+      const isBest = r.success && r.predicted_price===maxPrice;
+      const card   = document.createElement('div');
+      card.className = 'compare-card'+(isBest?' best':'');
+      card.innerHTML = r.success
+        ? `<div class="compare-algo">${r.algorithm}</div>
+           <div class="compare-price">${fmtMXN(r.predicted_price)}</div>
+           <div class="compare-r2">R² CV ${(r.metrics.r2_cv*100).toFixed(1)}% · MAPE ${r.metrics.mape.toFixed(1)}%</div>
+           ${isBest?'<div class="compare-best-badge">Precio más alto</div>':''}`
+        : `<div class="compare-algo">${r.model_key.toUpperCase()}</div>
+           <div style="color:var(--error);font-size:12px;margin-top:8px;">${r.error}</div>`;
+      grid.appendChild(card);
+    });
+
+    document.getElementById('comparativa').style.display='block';
+
+    // Gráfica comparativa
+    if(chartCompare){ chartCompare.destroy(); chartCompare=null; }
+    const labels = valid.map(r=>r.algorithm);
+    const prices = valid.map(r=>r.predicted_price);
+    chartCompare = buildBarChart('graficaCompare', labels, prices, data.zone_median);
+
+  } catch(err){
+    showBanner('No se pudo conectar con el servidor Flask. Verifica que app.py esté corriendo.');
+    console.error(err);
+  } finally { setLoading(false); }
+}
+
+/* ─── Health check & model chips al cargar ────────── */
+async function checkHealth(){
+  try {
+    const res  = await fetch(API_BASE+'/api/health');
+    const data = await res.json();
+    const loaded  = data.loaded_models  || [];
+    const missing = data.missing_models || [];
+    ['rf','xgb','lgbm'].forEach(k=>{
+      const chip = document.getElementById('chip-'+k);
+      if(!chip) return;
+      if(loaded.includes(k)){
+        chip.textContent = k.toUpperCase()+' ✓';
+        chip.classList.add('loaded');
+      } else {
+        chip.textContent = k.toUpperCase()+' ✗';
+        chip.classList.add('missing');
+      }
+    });
+  } catch(_){
+    // Backend no disponible aún — chips quedan en estado neutro
+    ['rf','xgb','lgbm'].forEach(k=>{
+      const chip = document.getElementById('chip-'+k);
+      if(chip){ chip.textContent = k.toUpperCase()+' —'; }
+    });
+  }
+}
+checkHealth();
+
+/* ─── Counter animation ──────────────────────────── */
+function animateCounter(el, target, suffix=''){
+  let start=0; const dur=2000; const step=16;
+  const inc = target/(dur/step);
+  const timer = setInterval(()=>{
+    start = Math.min(start+inc, target);
+    el.textContent = Math.round(start).toLocaleString()+(suffix||'');
+    if(start>=target) clearInterval(timer);
+  }, step);
+}
+const statObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      animateCounter(document.getElementById('stat1'), 12, '+');
+      animateCounter(document.getElementById('stat2'), 4800, '');
+      setTimeout(()=>{ const el=document.getElementById('stat2'); if(el) el.textContent='4.8K'; },2100);
+      animateCounter(document.getElementById('stat3'), 3, '');
+      statObs.disconnect();
+    }
+  });
+},{threshold:0.5});
+const heroStats = document.querySelector('.hero-stats');
+if(heroStats) statObs.observe(heroStats);
+</script>
+</body>
+</html>
