@@ -653,6 +653,4 @@ def health():
 # ──────────────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
-    logger.info("🚀 Iniciando MG Real Estate API en puerto %d (debug=%s)", port, debug)
-    app.run(host="0.0.0.0", port=port, debug=debug)
+    app.run(host="0.0.0.0", port=port)
